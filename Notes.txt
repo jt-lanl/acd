@@ -24,7 +24,7 @@ An example usage would be to run on the command line:
 
 python anomchange.py -i sample4.h5    // simplest case, uses defaults
 
-The output is the minimum and maximum valud of the acd (anomalousness) array.  That's not very practical, but it's handy for seeing how that range changes (or, in some cases, hopefully doesn't change) as you change various tiling options.  The whole array is created in anomcahnge.py, so you can mine that for whatever information you need.
+The output is the minimum and maximum value of the acd (anomalousness) array.  That's not very practical, but it's handy for seeing how that range changes (or, in some cases, hopefully doesn't change) as you change various tiling options.  The whole array is created in anomcahnge.py, so you can mine that for whatever information you need.
 
 There are several command line options, and you can run 
 
@@ -66,7 +66,7 @@ A kind of a hack is the "--mask" option, which creates a mask, a box just up-lef
 
 python anomchange.py -i sample4.h5 --show --acdclip 25 --mask
 
-For a pixel under mask (ie, a pixel i,j for which mask[i,j]==True), that pixel will not contribute to the estimation of covariance matrices, and the ACD value at that pixel will be set to min(acd); ie, equal to the least anomalous pixel.  A case could be made for setting it to 0 or some other fixed value instead.  Another case could be made for going ahead and computing it's anomalousness value (ie, mask it out only for the purpose of the covariane matrix computation).
+For a pixel under mask (ie, a pixel i,j for which mask[i,j]==True), that pixel will not contribute to the estimation of covariance matrices, and the ACD value at that pixel will be set to min(acd); ie, equal to the least anomalous pixel.  A case could be made for setting it to zero or some other fixed value instead.  Another case could be made for going ahead and computing its anomalousness value (ie, mask it out only for the purpose of the covariance matrix computation).
 
 In general, the routine anomchange.py is something that you would, in any operational scenario, replace wholesale with your own interface to your own data.
 
