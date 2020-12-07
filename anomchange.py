@@ -17,7 +17,7 @@ def commandline():
     paa("--tile",type=int,nargs=2,help="Pair of integers, eg '5 5' for 5x5 tiles")
     paa("--twopass",action="store_true",help="Use two-pass algorithm")
     paa("--imagefile","-i",required=True,
-        help="HDF5 file with items imgA, imgB, maskAB, maskBA")
+        help="HDF5 file with items imgA, imgB")
     paa("--show",action="store_true",help="show ACD image in a pop-up window")
     paa("--acdclip",type=float,help="Clip the ACD image")
     paa("--mask",action="store_true",help="hack a mask into the mix")
@@ -61,7 +61,7 @@ def main(args):
         if args.acdclip:
             plt.imshow(np.clip(acd,0,args.acdclip),cmap='gray_r')
         else:
-            plt.imshow(acd,cmap='viridis_r')
+            plt.imshow(acd,cmap='gray_r') ## cmap='viridis_r')
         plt.colorbar()
         plt.show()
     
