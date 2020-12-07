@@ -82,9 +82,9 @@ Also included in this package is a sample image pair dataset based on the Viareg
 
 This is an HDF5 file, and if you have the 'h5ls' utility you can see that two objects are imcluded in it
 
-    $h5ls viareg.h5    
-    imgA                     Dataset {375, 450, 127}   
-    imgB                     Dataset {375, 450, 127}   
+    $ h5ls viareg.h5    
+    imgA                     Dataset {375, 450, 8}   
+    imgB                     Dataset {375, 450, 8}   
 
 Here imgA and imgB are the two 127-band images.
 
@@ -92,29 +92,37 @@ Here imgA and imgB are the two 127-band images.
 
 An example usage would be to run on the command line:
 
-    $python anomchange.py -i viareg.h5
+    $ python anomchange.py -i viareg.h5
+    shapes: (375, 450, 8) (375, 450, 8)
+    acd (375, 450) -229.31111944269998 667.9494633080571
 
-The output is the minimum and maximum value of the acd (anomalousness) array.  That's not very practical, but it's handy for seeing how that range changes (or, in some cases, hopefully doesn't change) as you change various tiling options.  The whole array is created in anomcahnge.py, so you can mine that for whatever information you need.
+The output is the minimum and maximum value of the acd (anomalousness)
+array.  That's not very practical, but it's handy for seeing how that
+range changes (or, in some cases, hopefully doesn't change) as you
+change various tiling options.  The whole array is created in
+anomcahnge.py, so you can mine that for whatever information you need.
 
 There are several command line options, and you can run 
 
-    $python anomchange.py -h
+    $ python anomchange.py -h
 
 to get a description of all of them.
 
 For instance, you can run
 
-    $python anomchange.py -i viareg.h5 --show
+    $ python anomchange.py -i viareg.h5 --show
 
 and it should pop up a window with an image of the anomalousness array.  If you do use --show, it is handy to clip the values in the array to make anomalousness image more interpretable; eg '--acdclip 250' for this dataset shows a lot of structure.
 
 ### LCRA
 
-Local co-registration adjustment (LCRA) [3] suppresses a lot of small isolated anomalies, especially small linear features, that are caused by small misregistration effects; eg compare
+Local co-registration adjustment (LCRA) [3] suppresses a lot of
+spurious anomalies, especially small linear features, that are caused
+by small misregistration effects; eg compare
 
-    $python anomchange.py -i viareg.h5 --show --acdclip 250 -w 0  
-    $python anomchange.py -i viareg.h5 --show --acdclip 250 -w 1
-    $python anomchange.py -i viareg.h5 --show --acdclip 250 -w 2  
+    $ python anomchange.py -i viareg.h5 --show --acdclip 250 -w 0  
+    $ python anomchange.py -i viareg.h5 --show --acdclip 250 -w 1
+    $ python anomchange.py -i viareg.h5 --show --acdclip 250 -w 2  
 
 It really shows off the effect of w>0 (which is the LCRA radius).
 
@@ -122,33 +130,49 @@ It really shows off the effect of w>0 (which is the LCRA radius).
 
 For tiling, you can run:
 
-    $python anomchange.py -i viareg.h5 --tile 2 2  // runs one-pass ACD on each of 4 tiles   
-    $python anomchange.py -i viareg.h5 --tile 2 2 --twopass  // runs two-pass ACD on each of 4 tiles   
-    $python anomchange.py -i viareg.h5 --tile 1 1 --twopass  // runs two-pass ACD but on the whole image (useful for debugging)   
+    ## run one-pass ACD on each of 4 tiles
+    $ python anomchange.py -i viareg.h5 --tile 2 2
+    shapes: (375, 450, 8) (375, 450, 8)
+    range: 0 187 0 225
+    range: 0 187 225 450
+    range: 187 375 0 225
+    range: 187 375 225 450
+    acd (375, 450) -288.42025191472527 643.7397038831805
 
-In two-pass mode, you should see that the range of anomalousness is the same, independent of the number of tiles.
+    ## run two-pass ACD on each of 4 tiles
+    $ python anomchange.py -i viareg.h5 --tile 2 2 --twopass
+    ...
+    acd (375, 450) -229.30868373060986 667.6455551459532
+
+    ## run two-pass ACD but on the whole image (useful for debugging)   
+    $ python anomchange.py -i viareg.h5 --tile 1 1 --twopass
+    ...
+    acd (375, 450) -229.31111944269998 667.9494633080571
+
+In two-pass mode, you should see that the range of anomalousness is
+(almost) identical, independent of the number of tiles.
 
 ### EC
 
 You can also get EC (elliptically-contoured) algorithms [2] by using nu>2; eg
 
-    $python anomchange.py -i viareg.h5 --nu 10
+    $ python anomchange.py -i viareg.h5 --nu 10
 
 ## Other ACD algorithms
 
 Or you can use chronochrome instead of the default HACD:
 
-    $python anomchange.py -i viareg.h5 --beta 0 1
+    $ python anomchange.py -i viareg.h5 --beta 0 1
 
 Or you can do straight anomaly detection on the stacked images:
 
-    $python anomchange.py -i viareg.h5 --beta 0 0
+    $ python anomchange.py -i viareg.h5 --beta 0 0
 
 ### Mask option
 
 A kind of a hack is the "--mask" option, which creates a mask, a box just up-left of the center; the idea is to have something to test the mask code. In practice of course, the mask would be supplied as a separate image.
 
-    $python anomchange.py -i viareg.h5 --show --mask
+    $ python anomchange.py -i viareg.h5 --show --mask
 
 For a pixel under mask (ie, a pixel i,j for which mask[i,j]==True), that pixel will not contribute to the estimation of covariance matrices, and the ACD value at that pixel will be set to min(acd); ie, equal to the least anomalous pixel.  A case could be made for setting it to zero or some other fixed value instead.  Another case could be made for going ahead and computing its anomalousness value (ie, mask it out only for the purpose of the covariance matrix computation). But the purpose of this exercise is just to show how mask works; when you know what requirements you have (or what experiments you want do) with masks, you can code accordingly.
 
