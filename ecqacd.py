@@ -1,4 +1,3 @@
-from __future__ import division,print_function,absolute_import
 import numpy as np
 import scipy.linalg as la
 
@@ -75,12 +74,10 @@ def nu_est(zz,d,m=1):
     rnum = np.mean(zz**(1+m/2))
     rden = np.mean(zz**(m/2))
     kappa = rnum/rden
-    #print "nu: m,d,k=r3/r: ",m,d,kappa,"=",rnum,"/",rden, zz.shape
     if kappa <= d + m:
         est_nu = 0
     else:
         est_nu = 2 + m*kappa/(kappa-(d+m))
-    print("Estimated nu:",est_nu)
     return est_nu
 
 def nu_scale(nu,d,zz):
@@ -90,7 +87,7 @@ def nu_scale(nu,d,zz):
     else:
         return (nu+d)*np.log(1 + zz/(nu-2))
 
-class cca(object):
+class cca():
     
     def __init__(self,n_components):
         self.n_components=n_components
@@ -139,7 +136,7 @@ class cca(object):
 
         return imX,imY
 
-class acd(object):
+class acd:
     
     def fit(self,imX,imY,nu=0,mask=None,**kw_xtra):
         self.nBandsX = dx = imX.shape[-1]
@@ -270,8 +267,6 @@ class acd(object):
             nu = self.nu
         if nu == -1:
             self.nu = nu_est(zz,dX+dY)
-
-        #print("acd.apply: nu=",nu,"beta:",beta_x,beta_y)
 
         ##Compute anomalousness of change
         if (nu == 0):
