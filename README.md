@@ -86,7 +86,7 @@ This is an HDF5 file, and if you have the 'h5ls' utility you can see that two ob
     imgA                     Dataset {375, 450, 8}   
     imgB                     Dataset {375, 450, 8}   
 
-Here imgA and imgB are the two 127-band images.
+Here imgA and imgB are the two 8-band images.
 
 ## Usage of 'anomchange.py'
 
